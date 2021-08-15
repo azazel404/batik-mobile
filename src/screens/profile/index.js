@@ -142,7 +142,7 @@ const Profile = props => {
                         // setStatus('buy');
                         // setDetailProduct(item);
                         // setVisible(true);
-                      }}>
+                      }}>t
                       Need to pay
                     </Button> */}
                   </View>
