@@ -103,6 +103,9 @@ const DetailProduct = ({route, navigation}) => {
                 Price: {item.price}
               </Text>
               <Text style={{color: 'black', fontSize: moderateScale(14)}}>
+                Category: {item && item.categories.name}
+              </Text>
+              <Text style={{color: 'black', fontSize: moderateScale(14)}}>
                 Stock: {item.stock}
               </Text>
               <Text style={{color: 'black', fontSize: moderateScale(14)}}>

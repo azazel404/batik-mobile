@@ -21,6 +21,7 @@ const Profile = props => {
   const [orders, setOrders] = React.useState([]);
   const [status, seStatus] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
+
   const retrieveData = () => {
     setIsLoading(true);
     UserAPI.me()
@@ -43,6 +44,7 @@ const Profile = props => {
         console.log('err', {err});
       });
   };
+
   React.useEffect(() => {
     retrieveData();
   }, []);
@@ -75,9 +77,23 @@ const Profile = props => {
       });
   };
 
+  const updateOrder = item => {
+    let payload = {
+      status: 2,
+    };
+    UserAPI.updateOrder(payload, item.id)
+      .then(res => {
+        Alert.alert('Message', 'Successfully Process');
+        retrieveData();
+      })
+      .catch(err => {
+        console.log('err', err);
+      });
+  };
+
   const renderItem = ({item}) => {
     return (
-      <Card style={{marginVertical: moderateScale(6)}}>
+      <Card style={{marginVertical: moderateScale(4)}}>
         {profile && (
           <View style={{flexDirection: 'row'}}>
             <View
@@ -101,6 +117,7 @@ const Profile = props => {
                 }}>
                 Invoice: {item.code}
               </Text>
+
               <Text
                 style={{
                   color: 'black',
@@ -109,6 +126,27 @@ const Profile = props => {
                 }}>
                 Product: {item.products.name}
               </Text>
+              {status === 1 && (
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: moderateScale(12),
+                    marginTop: moderateScale(6),
+                  }}>
+                  Courir: {item.drivers && item.drivers.name}
+                </Text>
+              )}
+              {status === 1 && (
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: moderateScale(12),
+                    marginTop: moderateScale(6),
+                  }}>
+                  No Resi: {item.resi}
+                </Text>
+              )}
+
               <Text style={{color: 'black', fontSize: moderateScale(12)}}>
                 Start Date: {item.start_date}
               </Text>
@@ -118,7 +156,7 @@ const Profile = props => {
               <Text style={{color: 'black', fontSize: moderateScale(12)}}>
                 Quantity: {item.qty}
               </Text>
-              {status === 0 && (
+              {status === 0 ? (
                 <>
                   <View
                     style={{
@@ -131,23 +169,41 @@ const Profile = props => {
                       onPress={() => {
                         cancelOrder(item);
                       }}
-                      style={{marginRight: moderateScale(6)}}>
+                      style={{marginRight: moderateScale(4)}}>
                       Cancel Order
                     </Button>
-                    {/* <Button
+                    <Button
                       size="tiny"
                       status="primary"
-                      style={{marginRight: moderateScale(6)}}
+                      style={{marginRight: moderateScale(4)}}
                       onPress={() => {
                         // setStatus('buy');
                         // setDetailProduct(item);
                         // setVisible(true);
-                      }}>t
+                      }}>
                       Need to pay
-                    </Button> */}
+                    </Button>
                   </View>
                 </>
-              )}
+              ) : status === 1 ? (
+                <>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      marginTop: moderateScale(12),
+                    }}>
+                    <Button
+                      size="tiny"
+                      status="primary"
+                      style={{marginRight: moderateScale(4)}}
+                      onPress={() => {
+                        updateOrder(item);
+                      }}>
+                      Set To Arrived
+                    </Button>
+                  </View>
+                </>
+              ) : null}
             </View>
           </View>
         )}
@@ -244,7 +300,7 @@ const Profile = props => {
                     color: status === 3 ? 'blue' : 'black',
                     fontWeight: status === 3 ? 'bold' : 'normal',
                   }}>
-                  Cancelled
+                  Cancel
                 </Text>
               </TouchableOpacity>
             </Card>
@@ -290,7 +346,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   card: {
-    margin: 2,
+    margin: moderateScale(2),
   },
 });
 

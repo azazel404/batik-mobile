@@ -115,9 +115,9 @@ const Product = ({navigation}) => {
               }}>
               Price: {item.price}
             </Text>
-            {/* <Text style={{color: 'black', fontSize: moderateScale(12)}}>
+            <Text style={{color: 'black', fontSize: moderateScale(12)}}>
               Category: {item && item.categories.name}
-            </Text> */}
+            </Text>
             <Text style={{color: 'black', fontSize: moderateScale(12)}}>
               Stock: {item.stock}
             </Text>
@@ -139,13 +139,13 @@ const Product = ({navigation}) => {
                     item: item,
                   });
                 }}
-                style={{marginRight: moderateScale(6)}}>
+                style={{marginRight: moderateScale(4)}}>
                 View More
               </Button>
               <Button
                 size="tiny"
                 appearance="outline"
-                style={{marginRight: moderateScale(6)}}
+                style={{marginRight: moderateScale(4)}}
                 onPress={() => {
                   setStatus('buy');
                   setDetailProduct(item);
@@ -156,6 +156,7 @@ const Product = ({navigation}) => {
               <Button
                 size="tiny"
                 appearance="ghost"
+                style={{marginRight: moderateScale(4)}}
                 onPress={() => {
                   setStatus('cart');
                   setDetailProduct(item);

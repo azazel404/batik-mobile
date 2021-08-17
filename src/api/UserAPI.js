@@ -29,6 +29,13 @@ const UserAPI = {
     };
     return _fetch(`/bulk-order`, request);
   },
+  updateOrder: (paramBody, id) => {
+    const request = {
+      method: 'PUT',
+      body: paramBody,
+    };
+    return _fetch(`/update-order/${id}`, request);
+  },
   cancelOrder: (paramBody, id) => {
     const request = {
       method: 'POST',
