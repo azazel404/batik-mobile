@@ -1,1 +1,1 @@
-export const URLFILE = 'http://192.168.43.60:1337';
+export const URLFILE = 'http://192.168.100.16:1337';

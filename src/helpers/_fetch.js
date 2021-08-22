@@ -39,7 +39,6 @@ export const _fetch = async (
   }
 
   try {
-    console.log(request);
     const res = await axios(request);
 
     if (res.status >= 200 && res.status < 400) {

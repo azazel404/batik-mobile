@@ -33,6 +33,7 @@ const UserAPI = {
     const request = {
       method: 'PUT',
       body: paramBody,
+      type: 'multipart/form-data',
     };
     return _fetch(`/update-order/${id}`, request);
   },

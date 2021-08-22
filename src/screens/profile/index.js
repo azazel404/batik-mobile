@@ -8,6 +8,7 @@ import {
   Image,
   Alert,
   Text,
+  Platform,
 } from 'react-native';
 import {Card, Button} from '@ui-kitten/components';
 import UserAPI from '../../api/UserAPI';
@@ -15,12 +16,32 @@ import {moderateScale} from '../../helpers/scaling';
 import Loading from '../../components/spinner';
 import ImageEmpty from '../../assets/undraw_not_found_60pq.svg';
 import {URLFILE} from '../../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-const Profile = props => {
+const Profile = ({navigation}) => {
   const [profile, setProfile] = React.useState({});
   const [orders, setOrders] = React.useState([]);
   const [status, seStatus] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const choosePick = detailId => {
+    let options = {
+      includeBase64: true, //add this in the option to include base64 value in the response
+    };
+    launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('Image Picker Error: ', response.error);
+      } else {
+        setIsLoading(true);
+        updateOrderWithDocument(response.assets[0], detailId);
+      }
+    });
+  };
 
   const retrieveData = () => {
     setIsLoading(true);
@@ -77,11 +98,36 @@ const Profile = props => {
       });
   };
 
-  const updateOrder = item => {
-    let payload = {
-      status: 2,
+  const updateOrderWithDocument = (sourceImage, detailId) => {
+    let image = {
+      name: sourceImage.fileName,
+      type: sourceImage.type,
+      uri:
+        Platform.OS === 'android'
+          ? sourceImage.uri
+          : sourceImage.uri.replace('file://', ''),
     };
-    UserAPI.updateOrder(payload, item.id)
+    const formData = new FormData();
+    formData.append('status', 0);
+    formData.append('image', image);
+    UserAPI.updateOrder(formData, detailId)
+      .then(res => {
+        Alert.alert('Message', 'Successfully Process');
+        retrieveData();
+      })
+      .catch(err => {
+        console.log('err', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const updateOrder = item => {
+    const formData = new FormData();
+    formData.append('status', 2);
+
+    UserAPI.updateOrder(formData, item.id)
       .then(res => {
         Alert.alert('Message', 'Successfully Process');
         retrieveData();
@@ -172,17 +218,26 @@ const Profile = props => {
                       style={{marginRight: moderateScale(4)}}>
                       Cancel Order
                     </Button>
-                    <Button
-                      size="tiny"
-                      status="primary"
-                      style={{marginRight: moderateScale(4)}}
-                      onPress={() => {
-                        // setStatus('buy');
-                        // setDetailProduct(item);
-                        // setVisible(true);
-                      }}>
-                      Need to pay
-                    </Button>
+                    {item.image !== null ? (
+                      <Text
+                        style={{
+                          color: 'blue',
+                          fontWeight: 'bold',
+                          fontSize: moderateScale(12),
+                        }}>
+                        Verified Payment
+                      </Text>
+                    ) : (
+                      <Button
+                        size="tiny"
+                        status="primary"
+                        style={{marginRight: moderateScale(4)}}
+                        onPress={() => {
+                          choosePick(item.id);
+                        }}>
+                        Send proof of payment
+                      </Button>
+                    )}
                   </View>
                 </>
               ) : status === 1 ? (
@@ -233,6 +288,19 @@ const Profile = props => {
                 </View>
               </View>
             )}
+            <Button
+              size="tiny"
+              status="primary"
+              style={{marginTop: moderateScale(14)}}
+              onPress={async () => {
+                await AsyncStorage.removeItem('token_login');
+                await navigation.navigate('Login');
+                // setStatus('buy');
+                // setDetailProduct(item);
+                // setVisible(true);
+              }}>
+              Logout
+            </Button>
           </Card>
         </View>
         <View style={styles.containerStatus}>
